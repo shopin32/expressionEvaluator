@@ -6,30 +6,30 @@ package ua.samsung.model.graph;
  *
  * @param <T>
  */
-public class BinaryNode<T, P extends BinaryNode> 
+public class BinaryNode<T> 
 {
 	private T _nodeValue;
 	
-	private P  _left, _right;
+	private BinaryNode<T>  _left, _right;
 	
 	public BinaryNode(T nodeValue)
 	{
 		_nodeValue = nodeValue;
 	}
 
-	public P getLeft() {
+	public BinaryNode<T> getLeft() {
 		return _left;
 	}
 
-	public void setLeft(P left) {
+	public void setLeft(BinaryNode<T> left) {
 		_left = left;
 	}
 
-	public P getRight() {
+	public BinaryNode<T> getRight() {
 		return _right;
 	}
 
-	public void setRight(P right) {
+	public void setRight(BinaryNode<T> right) {
 		_right = right;
 	}
 

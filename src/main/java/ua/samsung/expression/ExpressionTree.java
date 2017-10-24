@@ -3,10 +3,11 @@ package ua.samsung.expression;
 import ua.samsung.model.expression.ExpressionItem;
 import ua.samsung.model.expression.ExpressionItemType;
 import ua.samsung.model.graph.BinaryNode;
+import ua.samsung.model.graph.BinaryTree;
 
-public class ExpressionTree extends BinaryNode<ExpressionItem, ExpressionTree>
+public class ExpressionTree extends BinaryTree<ExpressionItem>
 {
-	public ExpressionTree(ExpressionItem nodeValue) 
+	public ExpressionTree(BinaryNode<ExpressionItem> nodeValue) 
 	{
 		super(nodeValue);
 	}
@@ -14,9 +15,16 @@ public class ExpressionTree extends BinaryNode<ExpressionItem, ExpressionTree>
 	
 	public boolean any(ExpressionItemType type)
 	{
-		if(this.getNodeValue().getItemType().equals(type)) return true;
-		if(this.getLeft()!= null && this.getLeft().any(type)) return true;
-		if(this.getRight()!= null && this.getRight().any(type)) return true;
-		return false;
+		return first(getRoot(), type) != null;
+	}
+	
+	public BinaryNode<ExpressionItem> first(BinaryNode<ExpressionItem> node, ExpressionItemType type)
+	{
+		if(node == null) return null;
+		if(node.getNodeValue().getItemType().equals(type)) return node;
+		BinaryNode<ExpressionItem> leftFind = first(node.getLeft(), type);
+		if(leftFind !=null) return leftFind; 
+		BinaryNode<ExpressionItem> rightFind = first(node.getRight(), type);
+		return rightFind;
 	}
 }

@@ -9,9 +9,11 @@ public class Application
 {
 	public static void main(String[] args)
 	{
-		String[][] expressionsTable = retrieveInputs();
+//		String[][] expressionsTable = retrieveInputs();
 		
-		Arrays.stream(expressionsTable).forEach(s -> System.out.println(Arrays.toString(s)));
+//		Arrays.stream(expressionsTable).forEach(s -> System.out.println(Arrays.toString(s)));
+		
+		System.out.println(10/2*6/3/10);
 	}
 	
 	
