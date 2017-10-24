@@ -1,0 +1,6 @@
+.settings/
+target/
+.springBeans
+.project
+.classpath
+WebContent
