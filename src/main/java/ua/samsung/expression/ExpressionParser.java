@@ -1,7 +1,11 @@
 package ua.samsung.expression;
 
-import java.util.*;
-import java.util.Map.Entry;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.Stack;
 
 import ua.samsung.model.expression.ExpressionItem;
 import ua.samsung.model.expression.ExpressionItemType;
@@ -10,15 +14,17 @@ import ua.samsung.model.graph.BinaryNode;
 public class ExpressionParser 
 {
 	private Set<Character> _operators;
+	private String _variableRegex;
 	
-	public ExpressionParser(Character... operators)
+	public ExpressionParser(String variableRegex, Character... operators)
 	{
 		_operators = new HashSet<>(Arrays.asList(operators));
+		_variableRegex = variableRegex;
 	}
 	
 	public ExpressionParser()
 	{
-		this('+','-','/','*');
+		this("[a-zA-Z]+",'+','-','/','*');
 	}
 	
 	public ExpressionTree parse(String expression)
@@ -120,7 +126,7 @@ public class ExpressionParser
 		{
 			type = ExpressionItemType.OPERATOR;
 		} 
-		else if(expressionString.matches("[a-zA-Z]+"))
+		else if(expressionString.matches(_variableRegex))
 		{
 			type = ExpressionItemType.VARIABLE;
 		}
