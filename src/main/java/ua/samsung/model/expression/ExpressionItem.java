@@ -21,4 +21,12 @@ public class ExpressionItem
 	{
 		return _type;
 	}
+
+	@Override
+	public String toString() 
+	{
+		return "ExpressionItem [_itemValue=" + _itemValue + ", _type=" + _type + "]";
+	}
+	
+	
 }

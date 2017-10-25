@@ -3,6 +3,10 @@ package ua.samsung.expression;
 import java.util.*;
 import java.util.Map.Entry;
 
+import ua.samsung.model.expression.ExpressionItem;
+import ua.samsung.model.expression.ExpressionItemType;
+import ua.samsung.model.graph.BinaryNode;
+
 public class ExpressionParser 
 {
 	private Set<Character> _operators;
@@ -19,100 +23,122 @@ public class ExpressionParser
 	
 	public ExpressionTree parse(String expression)
 	{
-		
+		List<ExpressionItem> postfixExpression = infixToPostfix(expression);
 			
-		
-				
-		//TODO
-		return null;
+		return new ExpressionTree(convertExpressionIntoTree(postfixExpression));
 	}
 	
-	public String infixToPostfix(String expression)
+	public BinaryNode<ExpressionItem> convertExpressionIntoTree(List<ExpressionItem> postfix)
 	{
-		char[] expressionChars = expression.toCharArray();
+		Stack<BinaryNode<ExpressionItem>> stack = new Stack<>();
 		
-		Stack<Character> stack = new Stack<>();
-		
-		StringBuilder output = new StringBuilder();
-		
-		Character lastAppendeChar = null;
-		for(int charIndex = 0; charIndex < expressionChars.length; charIndex++)
+		for(ExpressionItem item: postfix)
 		{
-			char currentChar = expressionChars[charIndex];
-			if(!_operators.contains(currentChar))
+			
+			if(!item.getItemType().equals(ExpressionItemType.OPERATOR))
 			{
-				output.append(currentChar);
-				lastAppendeChar = currentChar;
+				stack.push(new BinaryNode<ExpressionItem>(item));
 			}
 			else
 			{
-				output.append(" ");
-				if(!stack.isEmpty() && !isLowerPrecedence(currentChar, stack.peek()))
+				BinaryNode<ExpressionItem> root = new BinaryNode<ExpressionItem>(item);
+				root.setRight(stack.pop());
+				root.setLeft(stack.pop());
+				stack.push(root);
+			}
+		}
+		
+		return stack.pop();
+	}
+	
+	
+	public List<ExpressionItem> infixToPostfix(String expression)
+	{
+		List<ExpressionItem> expressionItems = parseToExpressionItems(expression);
+		
+		Stack<ExpressionItem> stack = new Stack<>();
+		
+		List<ExpressionItem> postfixCollection = new ArrayList<>();
+		
+		for(int i = 0; i < expressionItems.size(); i++)
+		{
+			ExpressionItem currentItem = expressionItems.get(i);
+			if(!currentItem.getItemType().equals(ExpressionItemType.OPERATOR))
+			{
+				postfixCollection.add(currentItem);
+			}
+			else
+			{
+				if(!stack.isEmpty() && !isLowerPrecedence(currentItem, stack.peek()))
 				{
-					stack.push(currentChar);
+					stack.push(currentItem);
 				}
 				else
 				{
-					while(!stack.isEmpty() && isLowerPrecedence(currentChar, stack.peek()))
+					while(!stack.isEmpty() && isLowerPrecedence(currentItem, stack.peek()))
 					{
-						output.append(stack.pop()).append(" ");
-						lastAppendeChar = ' ';
+						postfixCollection.add(stack.pop());
 					}
-					stack.push(currentChar);
+					stack.push(currentItem);
 				}
 			}
 		}
 			
 		while (!stack.isEmpty()) 
 		{
-			Character val = stack.pop();
-			if(_operators.contains(val) && lastAppendeChar != ' ') output.append(" ");
-			output.append(val);
+			postfixCollection.add(stack.pop());
 	    }
-	    return output.toString().trim();
+	    return postfixCollection;
 	}
 	
-	public boolean isLowerPrecedence(char operator1, char operator2)
+	public List<ExpressionItem> parseToExpressionItems(String expression)
 	{
-		switch(operator1)
+		String[] expressionItemsStrings = expression.split("[\\+\\-\\*\\/]");
+		List<ExpressionItem> result = new ArrayList<>();
+		
+		int index = 0;
+		for(int i =0; i < expressionItemsStrings.length; i++)
 		{
-			case '+':
-			case '-':
-				return operator2 == '*' || operator2 == '/';
+			String expressionString = expressionItemsStrings[i];
+			result.add(toExpressionItem(expressionString));
+			if(i < expressionItemsStrings.length-1)
+			{
+				int start = index+ expressionString.length();
+				result.add(toExpressionItem(expression.substring(start, start+1)));
+			}
+			index += expressionString.length() +1;
+		}
+		return result;
+	}
+	
+	
+	public ExpressionItem toExpressionItem(String expressionString)
+	{
+		ExpressionItemType type = ExpressionItemType.OPERAND;
+		
+		if(expressionString.length() == 1 && _operators.contains(expressionString.charAt(0)))
+		{
+			type = ExpressionItemType.OPERATOR;
+		} 
+		else if(expressionString.matches("[a-zA-Z]+"))
+		{
+			type = ExpressionItemType.VARIABLE;
+		}
+		
+		return new ExpressionItem(expressionString, type);
+	}
+	
+	
+	public boolean isLowerPrecedence(ExpressionItem operator1, ExpressionItem operator2)
+	{
+		switch(operator1.getValueAsString())
+		{
+			case "+":
+				return operator2.getValueAsString().equals("-") || operator2.getValueAsString().equals("*") || operator2.getValueAsString().equals("/");
+			case "-":
+				return operator2.getValueAsString().equals("-") || operator2.getValueAsString().equals("*") || operator2.getValueAsString().equals("/");
 			default: 
 				return false;
 		}
 	}
-	
-	
-	
-	public List<Entry<Character, Integer>> findAllOperators(char[] expressionChars)
-	{
-		int cursor = 0;
-		List<Entry<Character, Integer>> result = new ArrayList<>();
-		
-		while(true)
-		{
-			int operatorIndex = findFirstOperatorOccurrance(expressionChars, cursor);
-			if( operatorIndex < 0) break;
-			
-			result.add(new AbstractMap.SimpleEntry<Character, Integer>(expressionChars[cursor], operatorIndex));
-			cursor = operatorIndex+1;
-		}
-		
-		return result;
-	}
-	
-		
-	public int findFirstOperatorOccurrance(char[] expressionChars, int startFrom)
-	{
-		if(startFrom >= expressionChars.length) return -1;
-		for(int charIndex = startFrom; charIndex< expressionChars.length; charIndex++)
-		{
-			if(_operators.contains(expressionChars[charIndex])) return charIndex;
-		}
-		return -1;
-	}
-	
-	
 }
