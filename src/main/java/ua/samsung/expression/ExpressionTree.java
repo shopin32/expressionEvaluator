@@ -74,6 +74,11 @@ public class ExpressionTree extends BinaryTree<ExpressionItem>
 		return result;
 	}
 	
+	public List<ExpressionItem> findVariables()
+	{
+		return find(ExpressionItemType.VARIABLE);
+	}
+	
 	public List<ExpressionItem> find(ExpressionItemType type)
 	{
 		return find(getRoot(), item -> item.getItemType().equals(type));

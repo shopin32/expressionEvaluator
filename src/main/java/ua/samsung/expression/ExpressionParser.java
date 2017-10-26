@@ -26,6 +26,10 @@ public class ExpressionParser
 	{
 		this("[a-zA-Z]+",'+','-','/','*');
 	}
+	public ExpressionParser(String variableRegex)
+	{
+		this(variableRegex,'+','-','/','*');
+	}
 	
 	public ExpressionTree parse(String expression)
 	{
