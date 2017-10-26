@@ -10,6 +10,7 @@ public class VariableEdge extends Edge<ExpressionTree>
 	public VariableEdge(ExpressionTree source, ExpressionTree target, String variableName) 
 	{
 		super(source, target);
+		_variableName = variableName;
 	}
 	
 	public String getVariableName()

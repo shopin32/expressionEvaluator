@@ -9,11 +9,18 @@ import java.util.Set;
 
 public class Graph<TVertex,TEdge extends Edge<TVertex>> 
 {
-	private Map<TVertex, Set<TVertex>> _structure;
+	private Map<TVertex, List<TEdge>> _structure;
 	
 	public Graph()
 	{
 		_structure = new HashMap<>();
+	}
+	
+	public void addEdge(TVertex vertex, TEdge edge)
+	{
+		if(!_structure.containsKey(vertex)) return;
+		
+		_structure.get(vertex).add(edge);
 	}
 	
 	public Set<TVertex> getVertices()
@@ -21,31 +28,20 @@ public class Graph<TVertex,TEdge extends Edge<TVertex>>
 		return _structure.keySet(); 
 	}
 	
-	public void addEdge(TVertex source, TVertex target)
-	{
-		addVertex(source);
-		addVertex(target);
-		
-		_structure.get(source).add(target);
-	}
-	
 	public void addVertex(TVertex vertex)
 	{
 		if(!_structure.containsKey(vertex))
 		{
-			_structure.put(vertex, new HashSet<>());
+			_structure.put(vertex, new ArrayList<>());
 		}
 	}
 	
-	public List<Edge<TVertex>> getEdges()
+	public List<TEdge> getEdges()
 	{
-		List<Edge<TVertex>> result = new ArrayList<>();
+		List<TEdge> result = new ArrayList<>();
 		for(TVertex source: getVertices())
 		{
-			for(TVertex target: _structure.get(source))
-			{
-				result.add(new Edge<>(source, target));
-			}
+			result.addAll(_structure.get(source));
 		}
 		return result;
 	}
@@ -54,7 +50,10 @@ public class Graph<TVertex,TEdge extends Edge<TVertex>>
 	{
 		Set<TVertex> result = new HashSet<>();
 		if(!_structure.containsKey(vertex)) return result;
-		result.addAll(_structure.get(vertex));
+		for(TEdge edge: _structure.get(vertex))
+		{
+			result.add(edge.getTarget());
+		}
 		return result;
 	}
 	

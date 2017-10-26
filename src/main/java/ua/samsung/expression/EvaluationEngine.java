@@ -35,7 +35,7 @@ public class EvaluationEngine
 		for(int i = 0; i < expressions.length; i++)
 		{
 			int length = expressions[i].length;
-			expressionTrees[i] = new ExpressionTree[length];
+			expressionTrees[i] = expressionTrees[i] == null ? new ExpressionTree[length]: expressionTrees[i];
 			
 			for(int j = 0; j < length; j++)
 			{
@@ -48,14 +48,15 @@ public class EvaluationEngine
 				for(ExpressionItem variable: variables)
 				{
 					Entry<Integer, Integer> indexes = _mapVariableToAnotherExpression.apply(variable.getValueAsString());
+					if(expressionTrees[indexes.getKey()] == null) expressionTrees[indexes.getKey()] = new ExpressionTree[expressions[indexes.getKey()].length];
 					ExpressionTree targetTree = expressionTrees[indexes.getKey()][indexes.getValue()];
 					
 					if(targetTree == null)
 					{
 						targetTree = _parser.parse(expressions[indexes.getKey()][indexes.getValue()]);
-						expressionTrees[indexes.getKey()][indexes.getValue()] = targetTree;
 					}
-					graph.addEdge(tree, targetTree);
+					expressionTrees[indexes.getKey()][indexes.getValue()] = targetTree;
+					graph.addEdge(tree, targetTree, variable.getValueAsString());
 				}
 			}
 		}
