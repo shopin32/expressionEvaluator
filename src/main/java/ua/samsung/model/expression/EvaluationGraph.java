@@ -11,9 +11,8 @@ import ua.samsung.expression.ExpressionTree;
 import ua.samsung.model.graph.Graph;
 
 public class EvaluationGraph extends Graph<ExpressionTree, VariableEdge> 
-{
-	
-	public Map<ExpressionTree, Boolean> evaluate()
+{	
+	public Map<ExpressionTree, Boolean> verticesEvaluationStatus()
 	{
 		Map<ExpressionTree, Boolean> visitedVertexes = new HashMap<>();
 		
@@ -23,10 +22,6 @@ public class EvaluationGraph extends Graph<ExpressionTree, VariableEdge>
 			path.add(vertex);
 			countElementsThatCanNotBeEvaluated(path, visitedVertexes);
 		}
-		
-		
-		
-		
 		return visitedVertexes;
 	}
 	

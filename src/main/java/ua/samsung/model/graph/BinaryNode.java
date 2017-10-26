@@ -36,4 +36,9 @@ public class BinaryNode<T>
 	public T getNodeValue() {
 		return _nodeValue;
 	}
+	
+	public void setNodeValue(T value)
+	{
+		_nodeValue = value;
+	}
 }

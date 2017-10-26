@@ -1,7 +1,10 @@
 package ua.samsung.expression;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.function.Function;
 
 import ua.samsung.model.expression.EvaluationGraph;
@@ -21,45 +24,71 @@ public class EvaluationEngine
 	
 	public String[][] evaluate(String[][] expressions)
 	{
+		ExpressionTree[][] expressionTrees = parseExpressions(expressions);
+		EvaluationGraph graph = fillTheGraph(expressionTrees);
+		
 		
 		
 		//TODO
 		return null;
 	}
 	
-	public EvaluationGraph fillTheGraph(String[][] expressions)
+	public String[][] compute(EvaluationGraph graph, ExpressionTree[][] expressionTrees)
+	{
+		Map<ExpressionTree, Boolean> expressionEvaluationStatus = graph.verticesEvaluationStatus();
+		
+		Map<ExpressionTree, Double> evaluatedResults = new HashMap<>();
+		
+		for(ExpressionTree vertex : graph.getVertices())
+			
+			
+	}
+	
+	
+	public static Map<ExpressionTree, Double> fill(EvaluationGraph graph, ExpressionTree root, Map<ExpressionTree, Boolean> expressionEvaluationStatus)
+	{
+		List<ExpressionItem> a = graph.getEdges(root);
+	}
+	
+	public EvaluationGraph fillTheGraph(ExpressionTree[][] expressionTrees)
 	{
 		EvaluationGraph graph = new EvaluationGraph();
-		ExpressionTree[][] expressionTrees = new ExpressionTree[expressions.length][];
 		
-		for(int i = 0; i < expressions.length; i++)
+		for(int i = 0; i < expressionTrees.length; i++)
 		{
-			int length = expressions[i].length;
-			expressionTrees[i] = expressionTrees[i] == null ? new ExpressionTree[length]: expressionTrees[i];
-			
+			int length = expressionTrees[i].length;
 			for(int j = 0; j < length; j++)
 			{
-				String expression = expressions[i][j];
-				ExpressionTree tree = (expressionTrees[i][j] == null) ? _parser.parse(expression): expressionTrees[i][j];
-				expressionTrees[i][j] = tree;
+				ExpressionTree tree = expressionTrees[i][j];
+				graph.addVertex(tree);
 				
 				List<ExpressionItem> variables = tree.findVariables();
 				
 				for(ExpressionItem variable: variables)
 				{
 					Entry<Integer, Integer> indexes = _mapVariableToAnotherExpression.apply(variable.getValueAsString());
-					if(expressionTrees[indexes.getKey()] == null) expressionTrees[indexes.getKey()] = new ExpressionTree[expressions[indexes.getKey()].length];
 					ExpressionTree targetTree = expressionTrees[indexes.getKey()][indexes.getValue()];
 					
-					if(targetTree == null)
-					{
-						targetTree = _parser.parse(expressions[indexes.getKey()][indexes.getValue()]);
-					}
-					expressionTrees[indexes.getKey()][indexes.getValue()] = targetTree;
 					graph.addEdge(tree, targetTree, variable.getValueAsString());
 				}
 			}
 		}
 		return graph;
 	}
+	
+	public ExpressionTree[][] parseExpressions(String[][] expressions)
+	{
+		ExpressionTree[][] expressionTrees = new ExpressionTree[expressions.length][];
+		
+		for(int i = 0; i < expressions.length; i++)
+		{
+			expressionTrees[i] = new ExpressionTree[expressions[i].length];
+			for(int j = 0; j < expressions.length; j++)
+			{
+				expressionTrees[i][j] = _parser.parse(expressions[i][j]);
+			}
+		}
+		return expressionTrees;
+	}
+	
 }

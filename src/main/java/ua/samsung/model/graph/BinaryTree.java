@@ -28,4 +28,17 @@ public class BinaryTree<T>
 		result.addAll(find(node.getRight(),isSearching));
 		return result;
 	}
+	
+	public boolean replace(BinaryNode<T> node, Predicate<T> isSearching, T updateValue)
+	{
+		if(node == null) return false;
+		if(isSearching.test(node.getNodeValue()))
+		{
+			node.setNodeValue(updateValue);
+			return true;
+		}
+		if(replace(node.getLeft(), isSearching, updateValue)) return true;
+		
+		return replace(node.getRight(), isSearching, updateValue);
+	}
 }

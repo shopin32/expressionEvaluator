@@ -74,6 +74,11 @@ public class ExpressionTree extends BinaryTree<ExpressionItem>
 		return result;
 	}
 	
+	public boolean variableValue(String variableName, Double value)
+	{
+		return replace(getRoot(), item -> item.getValueAsString().equals(variableName), new ExpressionItem(value.toString(), ExpressionItemType.OPERAND));
+	}
+	
 	public List<ExpressionItem> findVariables()
 	{
 		return find(ExpressionItemType.VARIABLE);

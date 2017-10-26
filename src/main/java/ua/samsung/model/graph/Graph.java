@@ -46,6 +46,11 @@ public class Graph<TVertex,TEdge extends Edge<TVertex>>
 		return result;
 	}
 	
+	public List<TEdge> getEdges(TVertex vertex)
+	{
+		return _structure.get(vertex);
+	}
+	
 	public Set<TVertex> successors(TVertex vertex)
 	{
 		Set<TVertex> result = new HashSet<>();
